@@ -30,7 +30,7 @@ Phantom Wallet: Browser extension for wallet integration.
 📂 Installation & Setup
 
 Clone the Repository
-git clone https://github.com/your-username/nft-marketplace-bot.git
+git clone (https://github.com/KamranAliOfficial/nft-marketplace-bot)
 cd nft-marketplace-bot
 
 
