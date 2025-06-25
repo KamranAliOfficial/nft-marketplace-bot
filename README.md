@@ -1,6 +1,13 @@
 🪙 Solana NFT Marketplace Bot
 A professional, full-featured Solana NFT minting bot with IPFS upload and rarity analysis capabilities. Built with Flask, Vanilla JavaScript, Phantom Wallet integration, and a clean, responsive UI.
 ---
+
+
+![image alt](https://github.com/KamranAliOfficial/nft-marketplace-bot/blob/9ec8596873fd8a973e19ca24600cf55573868152/Untitled%20design%20(1).png)
+
+
+
+
 🚀 Features
 
 Phantom Wallet Integration: Connect and display wallet details seamlessly.
