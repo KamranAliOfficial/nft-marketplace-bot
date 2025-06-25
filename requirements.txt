@@ -1,0 +1,6 @@
+Flask==2.3.3
+Flask-CORS==4.0.1
+requests==2.31.0
+python-dotenv==1.0.1
+werkzeug==3.0.1
+solana==0.31.0

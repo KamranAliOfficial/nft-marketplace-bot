@@ -1,0 +1,274 @@
+/* ==========================================================================
+   NFT Marketplace - Final Professional CSS
+   Designed by Kamran Ali | Dark Theme | Responsive | No External CSS Required
+   ========================================================================== */
+
+/* Root Theme Colors */
+:root {
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --secondary: #10b981;
+  --secondary-hover: #059669;
+  --accent: #8b5cf6;
+  --accent-hover: #7c3aed;
+  --error: #f87171;
+  --text: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --background: #1a202c;
+  --surface: #2d3748;
+  --border: #4b5563;
+  --link: #60a5fa;
+  --shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base */
+body {
+  font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+  background-color: var(--background);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.6;
+}
+
+/* Navbar */
+nav {
+  background: var(--surface);
+  padding: 1rem;
+  box-shadow: var(--shadow);
+}
+
+nav div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 80rem;
+  margin: 0 auto;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+nav h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+nav button {
+  background: var(--primary);
+  color: var(--text);
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.3s ease;
+}
+
+nav button:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+nav span {
+  background-color: var(--border);
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+/* Main */
+main {
+  flex: 1;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+main h2 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+main p {
+  text-align: center;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+/* Sections */
+section {
+  background: var(--surface);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow);
+}
+
+section h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* File Input */
+input[type="file"] {
+  width: 100%;
+  max-width: 24rem;
+  padding: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+}
+
+/* Buttons */
+button {
+  background-color: var(--primary);
+  color: var(--text);
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.3s ease, transform 0.1s ease;
+}
+
+button:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.loading::after {
+  content: '';
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--text);
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 0.5rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Variant Buttons */
+button.bg-green-600 { background: var(--secondary); }
+button.bg-green-600:hover:not(:disabled) { background: var(--secondary-hover); }
+
+button.bg-purple-600 { background: var(--accent); }
+button.bg-purple-600:hover:not(:disabled) { background: var(--accent-hover); }
+
+/* Rarity Table */
+#rarityResults table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+#rarityResults th, #rarityResults td {
+  padding: 0.5rem;
+  text-align: left;
+}
+
+#rarityResults thead {
+  background: var(--border);
+}
+
+#rarityResults tr {
+  border-bottom: 1px solid var(--border);
+}
+
+/* Notifications */
+.bg-green-600 {
+  background-color: var(--secondary);
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  margin-bottom: 0.5rem;
+}
+
+.bg-red-600 {
+  background-color: var(--error);
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  margin-bottom: 0.5rem;
+}
+
+.text-red-400 { color: var(--error); }
+.text-blue-400 { color: var(--link); }
+
+/* Output Sections */
+#output p {
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+#uploadResults a {
+  color: var(--link);
+  text-decoration: underline;
+}
+
+/* Footer */
+footer {
+  background: var(--surface);
+  text-align: center;
+  padding: 1rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-top: auto;
+}
+
+/* Utility */
+.hidden { display: none; }
+.w-full { width: 100%; }
+.text-left { text-align: left; }
+.border-collapse { border-collapse: collapse; }
+.border-b { border-bottom: 1px solid var(--border); }
+
+/* Responsive */
+@media (max-width: 640px) {
+  nav div {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  input[type="file"] {
+    max-width: 100%;
+  }
+
+  main h2 {
+    font-size: 1.5rem;
+  }
+
+  section {
+    padding: 1rem;
+  }
+}

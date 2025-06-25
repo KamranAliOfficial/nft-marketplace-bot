@@ -1,0 +1,240 @@
+<!-- index.html (Fixed + Pro Version) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NFT Marketplace</title>
+  <meta name="description" content="NFT rarity analyzer and IPFS mint tool">
+  <link rel="icon" href="https://via.placeholder.com/32" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #1a202c;
+      color: #e2e8f0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .loading::after {
+      content: '';
+      display: inline-block;
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid #ffffff;
+      border-top: 2px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 0.5rem;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="bg-gray-900 shadow">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-xl sm:text-2xl font-bold text-white">🧬 NFT Marketplace</h1>
+      <div>
+        <button id="connectWallet" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg">
+          Connect Wallet
+        </button>
+        <span id="walletAddress" class="hidden ml-2 text-sm bg-gray-700 px-3 py-1 rounded"></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="max-w-4xl mx-auto px-4 py-8 space-y-10">
+
+    <!-- Upload to IPFS -->
+    <section class="bg-gray-800 p-6 rounded-xl shadow">
+      <h2 class="text-2xl font-semibold mb-4">📁 Upload Files to IPFS</h2>
+      <input id="fileInput" type="file" multiple accept=".json,.png,.jpg" class="block w-full mb-4 p-2 bg-gray-700 text-white rounded" />
+      <button id="uploadButton" onclick="uploadFiles()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white">
+        Upload Files
+      </button>
+      <div id="uploadResults" class="mt-4 text-sm space-y-2"></div>
+    </section>
+
+    <!-- Rarity & Export -->
+    <section class="bg-gray-800 p-6 rounded-xl shadow">
+      <h2 class="text-2xl font-semibold mb-4">🔬 Rarity Analyzer</h2>
+      <div class="flex flex-wrap gap-4">
+        <button id="rarityButton" onclick="fetchRarity()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white">
+          Analyze Rarity
+        </button>
+        <button id="exportButton" onclick="exportCSV()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white">
+          Export CSV
+        </button>
+        <button id="mintButton" onclick="triggerMint()" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded text-white">
+          Mint NFT
+        </button>
+      </div>
+      <div id="rarityResults" class="mt-6 overflow-x-auto"></div>
+    </section>
+
+    <!-- Output / Notifications -->
+    <section class="bg-gray-800 p-6 rounded-xl shadow">
+      <h2 class="text-xl font-semibold mb-2">📤 Status</h2>
+      <div id="output"></div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center text-gray-500 py-4 text-sm">
+    &copy; 2025 Kamran's NFT Marketplace. All rights reserved.
+  </footer>
+
+  <script>
+    // ✅ Wallet Connect
+    const connectWalletButton = document.getElementById("connectWallet");
+    const walletAddressSpan = document.getElementById("walletAddress");
+    let walletConnected = false;
+
+    connectWalletButton.addEventListener("click", async () => {
+      if (window.solana && window.solana.isPhantom) {
+        try {
+          const res = await window.solana.connect();
+          const publicKey = res.publicKey.toString();
+          walletAddressSpan.textContent = publicKey.slice(0, 4) + "..." + publicKey.slice(-4);
+          walletAddressSpan.classList.remove("hidden");
+          connectWalletButton.textContent = "Wallet Connected";
+          connectWalletButton.disabled = true;
+          walletConnected = true;
+          showMessage("success", `Wallet connected: ${publicKey}`);
+        } catch {
+          showMessage("error", "Wallet connection failed.");
+        }
+      } else {
+        showMessage("error", "Phantom Wallet not detected.");
+      }
+    });
+
+    // ✅ Upload Files
+    async function uploadFiles() {
+      const input = document.getElementById("fileInput");
+      const uploadResults = document.getElementById("uploadResults");
+      const btn = document.getElementById("uploadButton");
+      if (!input.files.length) return showMessage("error", "No files selected.");
+      btn.disabled = true;
+      btn.classList.add("loading");
+      btn.textContent = "Uploading...";
+      const formData = new FormData();
+      for (let file of input.files) formData.append("file", file);
+      try {
+        const res = await fetch("/upload", { method: "POST", body: formData });
+        const data = await res.json();
+        if (data.error) {
+          showMessage("error", data.error);
+        } else {
+          const link = document.createElement("a");
+          link.href = data.ipfs_url;
+          link.textContent = data.ipfs_url;
+          link.className = "text-blue-400 underline";
+          link.target = "_blank";
+          uploadResults.appendChild(link);
+          showMessage("success", "Uploaded to IPFS successfully.");
+        }
+      } catch {
+        showMessage("error", "Upload failed.");
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove("loading");
+        btn.textContent = "Upload Files";
+        input.value = "";
+      }
+    }
+
+    // ✅ Analyze Rarity
+    async function fetchRarity() {
+      const btn = document.getElementById("rarityButton");
+      const result = document.getElementById("rarityResults");
+      btn.disabled = true;
+      btn.classList.add("loading");
+      btn.textContent = "Analyzing...";
+      try {
+        const res = await fetch("/rarity", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ metadata_path: "uploads" })  // ✅ fixed lowercase
+        });
+        const data = await res.json();
+        if (data.error) return showMessage("error", data.error);
+        let html = "<table class='w-full mt-4'><thead><tr class='text-left bg-gray-700'><th class='p-2'>Rank</th><th class='p-2'>Name</th><th class='p-2'>Score</th></tr></thead><tbody>";
+        data.forEach((nft, i) => {
+          html += `<tr class='border-b border-gray-700'><td class='p-2'>${i + 1}</td><td class='p-2'>${nft.name}</td><td class='p-2'>${nft.score.toFixed(2)}</td></tr>`;
+        });
+        html += "</tbody></table>";
+        result.innerHTML = html;
+        showMessage("success", "Rarity analysis completed.");
+      } catch {
+        showMessage("error", "Rarity failed.");
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove("loading");
+        btn.textContent = "Analyze Rarity";
+      }
+    }
+
+    // ✅ Export CSV
+    async function exportCSV() {
+      const btn = document.getElementById("exportButton");
+      btn.disabled = true;
+      btn.classList.add("loading");
+      btn.textContent = "Exporting...";
+      try {
+        const res = await fetch("/export_csv", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ metadata_path: "uploads" }) // ✅ fixed lowercase
+        });
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "rarity_scores.csv";
+        a.click();
+        showMessage("success", "CSV download started.");
+      } catch {
+        showMessage("error", "CSV export failed.");
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove("loading");
+        btn.textContent = "Export CSV";
+      }
+    }
+
+    // ✅ Mint Trigger
+    async function triggerMint() {
+      const btn = document.getElementById("mintButton");
+      if (!walletConnected) return showMessage("error", "Connect wallet first.");
+      btn.disabled = true;
+      btn.classList.add("loading");
+      btn.textContent = "Minting...";
+      try {
+        const res = await fetch("/mint", { method: "POST" });
+        const data = await res.json();
+        if (data.error) showMessage("error", data.error);
+        else showMessage("success", "Mint triggered.");
+      } catch {
+        showMessage("error", "Mint failed.");
+      } finally {
+        btn.disabled = false;
+        btn.classList.remove("loading");
+        btn.textContent = "Mint NFT";
+      }
+    }
+
+    // ✅ Helper
+    function showMessage(type, msg) {
+      const output = document.getElementById("output");
+      const div = document.createElement("div");
+      div.className = `mt-2 p-2 rounded text-sm ${type === "success" ? "bg-green-600" : "bg-red-600"}`;
+      div.textContent = msg;
+      output.prepend(div);
+      setTimeout(() => div.remove(), 5000);
+    }
+  </script>
+</body>
+</html>
